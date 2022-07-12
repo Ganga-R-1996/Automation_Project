@@ -1,5 +1,4 @@
 # Automation_Project
-DevOps_task_1
 This project contains the script to automate the below tasks while creating a new instance in AWS.
 1. Check for apache2 installation status in a machine.
 2. Install the apache2 if not installed.
