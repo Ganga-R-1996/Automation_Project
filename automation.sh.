@@ -1,0 +1,52 @@
+#! /bin/sh
+name=Ganga
+s3_name=upgrad-ganga
+if [ $(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed") -eq 0 ];
+then
+  apt-get install apache2;
+fi
+
+sleep 10
+
+if pgrep -x "apache2" >/dev/null
+then echo "1"
+else
+        systemctl start apache2
+fi
+sleep 5
+if apache2ctl -M >/dev/null
+then
+        echo "Apache2 is enabled"
+else
+        systemctl enable apache2
+fi
+sleep 6
+
+
+cd /var/log/
+mkdir temp_log_archival
+cp apache2/*.log /var/log/temp_log_archival
+sleep 5
+cat /dev/null > /var/log/apache2/error.log
+cat /dev/null > /var/log/apache2/access.log
+cat /dev/null > /var/log/apache2/other_vhosts_access.log
+timestamp=$(date '+%d%m%Y-%H%M%S')
+tar -czf /tmp/$name-httpd-logs-$timestamp.tar.gz temp_log_archival && rm -rf /var/log/temp_log_archival
+sleep 10
+cd /tmp/
+if [ -e Ganga-httpd-*.tar.gz ]
+then
+        aws s3 cp ./Ganga-httpd-*.tar.gz s3://$s3_name/
+else
+        echo "no files to copy"
+fi
+
+sleep 5
+
+if [ -d "/tmp/https_bkp/" ]
+then
+    mv /tmp/Ganga-httpd-*.tar.gz /tmp/https_bkp/
+else
+    mkdir /tmp/https_bkp/ && mv /tmp/Ganga-httpd-*.tar.gz /tmp/https_bkp/
+fi
+exit
