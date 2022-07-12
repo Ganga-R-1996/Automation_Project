@@ -1,6 +1,6 @@
 #! /bin/sh
-name=Ganga
-s3_name=upgrad-ganga
+name=Ganga ##Variable for my name
+s3_name=upgrad-ganga ##Variable for my s3 bucket
 if [ $(dpkg-query -W -f='${Status}' apache2 2>/dev/null | grep -c "ok installed") -eq 0 ];
 then
   apt-get install apache2;
