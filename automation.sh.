@@ -50,4 +50,18 @@ then
 else
     mkdir /tmp/https_bkp/ && mv /tmp/Ganga-httpd-*.tar.gz /tmp/https_bkp/
 fi
+
+sleep 5
+cd /tmp/
+ll -ltrh>log1.txt
+sed "s/ *$//; s/[[:space:]]\+/\t/g; s/$/\t/" log1.txt > log2.txt
+log_type=$(tail -1 log2.txt | cut -c 62-70)
+Date_created=$(tail -1 log2.txt | cut -c 73-87)
+type=$(tail -1 log2.txt | cut -c 89-91)
+Size=$(tail -1 log2.txt | cut -c 24-27)
+echo "$log_type"&&echo "$Date_created"&&echo "$type"&&echo "$Size">result.txt
+echo "log_type  Date_created    type    Size">inventory.html
+echo (readarray -t ARRAY < result.txt; IFS=' '; echio "${ARRAY[*]}")>inventory.txt
+echo >result.txt
+if grep "*/1 *  *  *  * root /root/Automation_Project/automation.sh" /etc/crontab; then echo "Entry already in crontab"; else echo "*/1 *  *  *  * root /root/Automation_Project/automation.sh" >> /etc/crontab; fi
 exit
